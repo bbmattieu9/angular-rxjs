@@ -1,5 +1,5 @@
 <div class="card"
-     *ngIf="product">
+     *ngIf="product$ | async as product">
   <div class="card-header bg-purple box-shadow">
     <h6 class="mb-0 text-white lh-100">{{pageTitle}}</h6>
   </div>
