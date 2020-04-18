@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
-import { Subscription, of, EMPTY } from 'rxjs';
+import { Subscription, of, EMPTY, Subject } from 'rxjs';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
@@ -8,27 +8,35 @@ import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'pm-product-list',
-  templateUrl: './product-list-alt.component.html'
+  templateUrl: './product-list-alt.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductListAltComponent implements OnInit {
-  pageTitle = 'Products';
-  errorMessage = '';
-  selectedProductId;
-
-  products$ = this.productService.products$.pipe(
-    catchError(err => {
-      this.errorMessage = err;
-      return EMPTY;
-    })
-);
-  sub: Subscription;
 
   constructor(private productService: ProductService) { }
+  pageTitle = 'Products List';
+  private errorMessageSubject  = new Subject<string>();
+  errorMessage$ = this.errorMessageSubject.asObservable();
+
+  selectedProduct$ = this.productService.selectedProduct$;
+
+  // List of products with their category
+  products$ = this.productService.productWithCategory$.pipe(
+    catchError(err => {
+      this.errorMessageSubject.next(err);
+      return EMPTY;
+    })
+  );
+  sub: Subscription;
 
   ngOnInit(): void { }
 
 
   onSelected(productId: number): void {
-    console.log('Not yet implemented');
+    this.productService.slecetedProductChanged(productId);
   }
+
+
+
+
 }
