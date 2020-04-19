@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable, throwError, combineLatest, BehaviorSubject } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import { Observable, throwError, combineLatest, BehaviorSubject, Subject, merge } from 'rxjs';
+import { catchError, tap, map, scan } from 'rxjs/operators';
 
 import { Product } from './product';
 import { Supplier } from '../suppliers/supplier';
@@ -13,19 +13,31 @@ import { ProductCategoryService } from '../product-categories/product-category.s
   providedIn: 'root'
 })
 export class ProductService {
+
+  constructor(private http: HttpClient,
+              private supplierService: SupplierService,
+              private procductCatergoryService: ProductCategoryService) { }
   private productsUrl = 'api/products';
   private suppliersUrl = this.supplierService.suppliersUrl;
 
+  // create an action stream for product selected from drop-down list
   private productSelectedSubject = new BehaviorSubject<number>(0);
   productSelectedAction$ = this.productSelectedSubject.asObservable();
 
 
+  // create an action stream for the InsertedProduct
+  private productInsertedSubject = new Subject<Product>();
+  productInsertedAction$ = this.productInsertedSubject.asObservable();
+
+
+  // Get all products
   products$ = this.http.get<Product[]>(this.productsUrl)
   .pipe(
     tap(data => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)
   );
 
+  // Get all products with their category then increase product price by 1.5
   productWithCategory$ = combineLatest([
     this.products$,
     this.procductCatergoryService.productCategories$
@@ -50,13 +62,21 @@ export class ProductService {
     tap(product => console.log(`Selected-Product is: ${product}`))
   );
 
+    addNewProduct$ = merge(
+      this.productWithCategory$,
+      this.productInsertedAction$
+    ).pipe(
+      scan((acc: Product[], value: Product) => [...acc, value])
+    );
+
+    addProduct(newProduct?: Product) {
+      newProduct = newProduct || this.fakeProduct();
+      this.productInsertedSubject.next(newProduct);
+    }
+
   slecetedProductChanged(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId);
   }
-
-  constructor(private http: HttpClient,
-              private supplierService: SupplierService,
-              private procductCatergoryService: ProductCategoryService) { }
 
 
   private fakeProduct() {
