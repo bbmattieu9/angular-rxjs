@@ -3,6 +3,8 @@ import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ProductService } from '../product.service';
 import { catchError, tap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { Supplier } from 'src/app/suppliers/supplier';
+import { SupplierService } from 'src/app/suppliers/supplier.service';
 
 
 @Component({
@@ -13,6 +15,8 @@ import { EMPTY } from 'rxjs';
 export class ProductDetailComponent implements OnInit{
   pageTitle = 'Product Detail';
   errorMessage = '';
+
+  productSuppliers$ = this.supplierService.suppliers$;
 
 
   // Get a single product
@@ -26,7 +30,8 @@ export class ProductDetailComponent implements OnInit{
   );
 
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService,
+              private supplierService: SupplierService) { }
 
 
   ngOnInit() {
