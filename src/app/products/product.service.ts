@@ -37,6 +37,8 @@ export class ProductService {
     catchError(this.handleError)
   );
 
+ 
+
   // Get all products with their category then increase product price by 1.5
   productWithCategory$ = combineLatest([
     this.products$,

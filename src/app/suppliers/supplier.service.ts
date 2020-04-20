@@ -2,14 +2,24 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { throwError } from 'rxjs';
+import { Supplier } from './supplier';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
-  suppliersUrl = 'api/suppliers';
 
   constructor(private http: HttpClient) { }
+  suppliersUrl = 'api/suppliers';
+
+  // Get suppiers
+   // Get Suppliers
+    suppliers$ = this.http.get<Supplier[]>(this.suppliersUrl)
+    .pipe(
+      tap(suppliersData => console.log('Suppliers Data :', suppliersData)),
+      catchError(this.handleError)
+    );
 
   private handleError(err: any) {
     // in a real world app, we may send the server to some remote logging infrastructure
