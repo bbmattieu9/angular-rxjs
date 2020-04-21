@@ -18,7 +18,7 @@ export class ProductDetailComponent implements OnInit{
 
   productSuppliers$ = this.supplierService.suppliers$.pipe(
     tap(
-      supplierDetail => console.log(' SupplierInfo :', JSON.stringify(supplierDetail))
+      supplierDetail => console.log(' SupplierInfo :', JSON.stringify(supplierDetail)),
     )
   );
 
@@ -26,7 +26,8 @@ export class ProductDetailComponent implements OnInit{
   // Get a single product
   product$ = this.productService.selectedProduct$
   .pipe(
-    tap(products => console.log('The product returned from ProductDetailComponent.product$() => :', JSON.stringify(products))),
+    tap(product =>
+      console.log('The product returned from ProductDetailComponent.product$() => :', JSON.stringify(product))),
     catchError(err => {
       this.errorMessage = err;
       return EMPTY;
