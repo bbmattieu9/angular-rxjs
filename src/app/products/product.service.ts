@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable, throwError, combineLatest, BehaviorSubject, Subject, merge } from 'rxjs';
-import { catchError, tap, map, scan } from 'rxjs/operators';
+import { catchError, tap, map, scan, shareReplay } from 'rxjs/operators';
 
 import { Product } from './product';
 import { Supplier } from '../suppliers/supplier';
@@ -37,7 +37,6 @@ export class ProductService {
     catchError(this.handleError)
   );
 
- 
 
   // Get all products with their category then increase product price by 1.5
   productWithCategory$ = combineLatest([
@@ -51,7 +50,8 @@ export class ProductService {
           category: catergories.find(c => product.categoryId === c.id).name,
           searchKey: [product.productName]
         }) as Product)
-      )
+      ),
+      shareReplay(1),
   );
 
   selectedProduct$ = combineLatest([
@@ -61,7 +61,8 @@ export class ProductService {
   .pipe(
     map(([products, selectedProductId]) =>
         products.find(product => product.id === selectedProductId)),
-    tap(product => console.log(`Selected-Product is: ${product}`))
+    tap(product => console.log(`Selected-Product is: ${product}`)),
+    shareReplay(1)
   );
 
     addNewProduct$ = merge(

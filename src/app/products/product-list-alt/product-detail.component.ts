@@ -16,7 +16,11 @@ export class ProductDetailComponent implements OnInit{
   pageTitle = 'Product Detail';
   errorMessage = '';
 
-  productSuppliers$ = this.supplierService.suppliers$;
+  productSuppliers$ = this.supplierService.suppliers$.pipe(
+    tap(
+      supplierDetail => console.log(' SupplierInfo :', JSON.stringify(supplierDetail))
+    )
+  );
 
 
   // Get a single product
