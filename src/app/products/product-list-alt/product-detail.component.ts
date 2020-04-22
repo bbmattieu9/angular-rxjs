@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 
 import { ProductService } from '../product.service';
 import { catchError, tap } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { Supplier } from 'src/app/suppliers/supplier';
 import { SupplierService } from 'src/app/suppliers/supplier.service';
 
@@ -16,10 +16,15 @@ export class ProductDetailComponent implements OnInit{
   pageTitle = 'Product Detail';
   errorMessage = '';
 
-  productSuppliers$ = this.supplierService.suppliers$.pipe(
-    tap(
-      supplierDetail => console.log(' SupplierInfo :', JSON.stringify(supplierDetail)),
-    )
+  errorMesssageSubject = new Subject<string>();
+  errorMessage$ = this.errorMesssageSubject.asObservable();
+
+  productSuppliers$ = this.productService.selectedProductSuppliers$
+  .pipe(
+    catchError(err => {
+      this.errorMesssageSubject.next(err);
+      return EMPTY;
+    })
   );
 
 
