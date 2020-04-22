@@ -3,8 +3,6 @@ import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ProductService } from '../product.service';
 import { catchError, tap, map, filter } from 'rxjs/operators';
 import { EMPTY, Subject, combineLatest } from 'rxjs';
-import { Supplier } from 'src/app/suppliers/supplier';
-import { SupplierService } from 'src/app/suppliers/supplier.service';
 import { Product } from '../product';
 
 
@@ -13,7 +11,7 @@ import { Product } from '../product';
   templateUrl: './product-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductDetailComponent implements OnInit{
+export class ProductDetailComponent {
   errorMessage = '';
 
   errorMesssageSubject = new Subject<string>();
@@ -26,8 +24,6 @@ export class ProductDetailComponent implements OnInit{
       return EMPTY;
     })
   );
-
-
 
 
   // Get a single product
@@ -48,23 +44,19 @@ export class ProductDetailComponent implements OnInit{
 
 
   // Combining all streams together
-  vm$ = combineLatest([
-      this.product$,
-      this.productSuppliers$,
-      this.pageTitle$
-  ]).pipe(
-    filter(([product]) => Boolean(product)),
-    map(([product, productSuppliers, pageTitle]) =>
-    ({ product, productSuppliers, pageTitle}))
-  );
 
-  constructor(private productService: ProductService,
-              private supplierService: SupplierService) { }
+  // vm$ = combineLatest([
+  //     this.product$,
+  //     this.productSuppliers$,
+  //     this.pageTitle$
+  // ]).pipe(
+  //   filter(([product]) => Boolean(product)),
+  //   map(([product, productSuppliers, pageTitle]) =>
+  //   ({ product, productSuppliers, pageTitle}))
+  // );
 
+  constructor(private productService: ProductService) { }
 
-  ngOnInit() {
-    console.warn('Not yet Implemented!');
-}
 
 
 }
