@@ -1,10 +1,9 @@
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 
 import { ProductService } from '../product.service';
-import { catchError, tap } from 'rxjs/operators';
-import { EMPTY, Subject } from 'rxjs';
-import { Supplier } from 'src/app/suppliers/supplier';
-import { SupplierService } from 'src/app/suppliers/supplier.service';
+import { catchError, tap, map, filter } from 'rxjs/operators';
+import { EMPTY, Subject, combineLatest } from 'rxjs';
+import { Product } from '../product';
 
 
 @Component({
@@ -12,8 +11,7 @@ import { SupplierService } from 'src/app/suppliers/supplier.service';
   templateUrl: './product-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductDetailComponent implements OnInit{
-  pageTitle = 'Product Detail';
+export class ProductDetailComponent {
   errorMessage = '';
 
   errorMesssageSubject = new Subject<string>();
@@ -39,14 +37,26 @@ export class ProductDetailComponent implements OnInit{
     })
   );
 
+  pageTitle$ = this.product$
+  .pipe(
+    map((p: Product) => p ?  `Product Detail for: ${p.productName}` : null)
+  );
 
-  constructor(private productService: ProductService,
-              private supplierService: SupplierService) { }
 
+  // Combining all streams together
 
-  ngOnInit() {
-    console.warn('Not yet Implemented!');
-}
+  // vm$ = combineLatest([
+  //     this.product$,
+  //     this.productSuppliers$,
+  //     this.pageTitle$
+  // ]).pipe(
+  //   filter(([product]) => Boolean(product)),
+  //   map(([product, productSuppliers, pageTitle]) =>
+  //   ({ product, productSuppliers, pageTitle}))
+  // );
+
+  constructor(private productService: ProductService) { }
+
 
 
 }
