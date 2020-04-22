@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { throwError, combineLatest, of } from 'rxjs';
 import { Supplier } from './supplier';
-import { tap, catchError, map, concatMap, mergeMap, switchMap } from 'rxjs/operators';
+import { tap, catchError, map, concatMap, mergeMap, switchMap, shareReplay } from 'rxjs/operators';
 import { ProductService } from '../products/product.service';
 
 @Injectable({
@@ -18,6 +18,7 @@ export class SupplierService {
     suppliers$ = this.http.get<Supplier[]>(this.suppliersUrl)
     .pipe(
       tap(suppliersData => console.log('Suppliers Data :', JSON.stringify(suppliersData))),
+      shareReplay(1),
       catchError(this.handleError)
     );
 
